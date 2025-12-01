@@ -1,9 +1,16 @@
 package model;
 
-public class Task {
+import interfaces.Completable;
+
+public class Task  implements Completable {
 
     private String id;
     private String title;
     private String description;
-    private boolean İsCompleted;
+    private boolean completed;
+
+    @Override
+    public void complete(){
+
+    }
 }
