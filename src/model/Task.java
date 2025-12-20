@@ -17,6 +17,21 @@ public class Task  implements Completable {
         this.completed = false;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+    public String getDescription() {
+        return  description;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
     @Override
     public void complete(){
 
