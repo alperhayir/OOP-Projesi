@@ -34,6 +34,6 @@ public class Task  implements Completable {
 
     @Override
     public void complete(){
-
+        this.completed = true;
     }
 }
