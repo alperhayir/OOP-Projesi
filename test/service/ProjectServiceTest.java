@@ -52,4 +52,12 @@ public class ProjectServiceTest {
 
     }
 
+    @Test
+    void olmayanProjeninGorevleriNullDonuyorMu() {
+        ProjectService projectService = new ProjectService();
+
+        assertNull(projectService.getProjectTasks("p999"));
+    }
+
+
 }

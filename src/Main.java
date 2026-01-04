@@ -1,9 +1,9 @@
 import model.*;
 import service.ProjectService;
 import service.TaskService;
+import service.UserService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -13,7 +13,7 @@ public class Main {
 
         TaskService taskService = new TaskService();
         ProjectService projectService = new ProjectService();
-        List<User> users = new ArrayList<>();
+        UserService userService = new UserService();
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -40,258 +40,132 @@ public class Main {
 
             switch (secim) {
 
+                case 4 -> { // Görevi kullanıcıya ata
 
-                case 1: {
-                    String taskId;
-
-                    while (true) {
-                        System.out.print("Görev ID (0: Ana Menü): ");
-                        taskId = scanner.nextLine();
-
-                        if (taskId.equals("0")) break;
-
-                        if (taskExists(taskService, taskId)) {
-                            System.out.println("Bu ID ile görev zaten mevcut. Tekrar deneyin.");
-                            continue;
-                        }
-                        break;
-                    }
-
-                    if (taskId.equals("0")) break;
-
-                    System.out.print("Görev Başlığı: ");
-                    String title = scanner.nextLine();
-
-                    System.out.print("Görev Açıklaması: ");
-                    String desc = scanner.nextLine();
-
-                    taskService.createTask(taskId, title, desc);
-                    System.out.println(" Görev oluşturuldu.");
-                    break;
-                }
-
-
-                case 2: {
-                    String timedId;
-
-                    while (true) {
-                        System.out.print("Süreli Görev ID (0: Ana Menü): ");
-                        timedId = scanner.nextLine();
-
-                        if (timedId.equals("0")) break;
-
-                        if (taskExists(taskService, timedId)) {
-                            System.out.println(" Bu ID ile görev zaten mevcut. Tekrar deneyin.");
-                            continue;
-                        }
-                        break;
-                    }
-
-                    if (timedId.equals("0")) break;
-
-                    System.out.print("Görev Başlığı: ");
-                    String tTitle = scanner.nextLine();
-
-                    System.out.print("Görev Açıklaması: ");
-                    String tDesc = scanner.nextLine();
-
-                    System.out.print("Deadline (YYYY-MM-DD): ");
-                    LocalDate dueDate = LocalDate.parse(scanner.nextLine());
-
-                    taskService.createTimedTask(timedId, tTitle, tDesc, dueDate);
-                    System.out.println("✔ Süreli görev oluşturuldu.");
-                    break;
-                }
-
-
-                case 3:
                     if (taskService.getAllTasks().isEmpty()) {
-                        System.out.println(" Henüz hiç görev yok.");
+                        System.out.println("✖ Görev yok.");
                         returnToMainMenu(scanner);
                         break;
                     }
 
+                    if (userService.getAllUsers().isEmpty()) {
+                        System.out.println("✖ Kullanıcı yok. Önce kullanıcı ekleyin.");
+                        returnToMainMenu(scanner);
+                        break;
+                    }
+
+                    User user;
                     while (true) {
-                        printAllTasksSimple(taskService);
-                        System.out.print("Tamamlanacak Görev ID (0: Ana Menü): ");
-                        String completeId = scanner.nextLine();
-
-                        if (completeId.equals("0")) break;
-
-                        if (!taskExists(taskService, completeId)) {
-                            System.out.println("✖ Geçersiz görev ID. Tekrar deneyin.");
-                            continue;
-                        }
-
-                        taskService.completeTask(completeId);
-                        System.out.println("✔ Görev tamamlandı.");
-                        break;
-                    }
-                    break;
-
-
-                case 4:
-                    if (taskService.getAllTasks().isEmpty()) {
-                        System.out.println(" Görev yok.");
-                        returnToMainMenu(scanner);
-                        break;
-                    }
-
-                    if (users.isEmpty()) {
-                        System.out.println(" Kullanıcı yok.");
-                        returnToMainMenu(scanner);
-                        break;
-                    }
-
-                    User selectedUser = null;
-                    while (true) {
-                        printAllUsers(users);
+                        printAllUsers(userService);
                         System.out.print("Kullanıcı ID (0: Ana Menü): ");
                         String uid = scanner.nextLine();
 
-                        if (uid.equals("0")) break;
-
-                        selectedUser = findUserById(users, uid);
-                        if (selectedUser == null) {
-                            System.out.println(" Geçersiz kullanıcı ID. Tekrar deneyin.");
-                            continue;
+                        if (uid.equals("0")) {
+                            returnToMainMenu(scanner);
+                            return;
                         }
-                        break;
+
+                        user = userService.findUserById(uid);
+                        if (user == null) {
+                            System.out.println("✖ Kullanıcı mevcut değil, tekrar deneyin.");
+                        } else break;
                     }
 
-                    if (selectedUser == null) break;
-
+                    Task task;
                     while (true) {
                         printAllTasksSimple(taskService);
-                        System.out.print("Atanacak Görev ID (0: Ana Menü): ");
-                        String taskToUser = scanner.nextLine();
+                        System.out.print("Görev ID (0: Ana Menü): ");
+                        String tid = scanner.nextLine();
 
-                        if (taskToUser.equals("0")) break;
-
-                        Task tUser = findTaskById(taskService.getAllTasks(), taskToUser);
-                        if (tUser == null) {
-                            System.out.println(" Geçersiz görev ID. Tekrar deneyin.");
-                            continue;
+                        if (tid.equals("0")) {
+                            returnToMainMenu(scanner);
+                            return;
                         }
 
-                        taskService.assignTaskToUser(tUser, selectedUser);
-                        System.out.println("✔Görev kullanıcıya atandı.");
-                        break;
+                        task = taskService.findTaskById(tid);
+                        if (task == null) {
+                            System.out.println("✖ Görev mevcut değil, tekrar deneyin.");
+                        } else break;
                     }
-                    break;
 
+                    try {
+                        taskService.assignTaskToUser(task, user);
+                        System.out.println("✔ Görev kullanıcıya atandı.");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
 
-                case 5:
+                case 5 -> { // Görevi projeye ata
+
                     if (taskService.getAllTasks().isEmpty()) {
-                        System.out.println(" Görev yok.");
+                        System.out.println("✖ Görev yok.");
                         returnToMainMenu(scanner);
                         break;
                     }
 
                     if (projectService.getAllProjects().isEmpty()) {
-                        System.out.println(" Proje yok.");
+                        System.out.println("✖ Proje yok. Önce proje ekleyin.");
                         returnToMainMenu(scanner);
                         break;
                     }
 
-                    Project selectedProject = null;
+                    Project project;
                     while (true) {
                         printAllProjects(projectService);
                         System.out.print("Proje ID (0: Ana Menü): ");
                         String pid = scanner.nextLine();
 
-                        if (pid.equals("0")) break;
-
-                        selectedProject = projectService.findProjectById(pid);
-                        if (selectedProject == null) {
-                            System.out.println("✖ Geçersiz proje ID. Tekrar deneyin.");
-                            continue;
+                        if (pid.equals("0")) {
+                            returnToMainMenu(scanner);
+                            return;
                         }
-                        break;
+
+                        project = projectService.findProjectById(pid);
+                        if (project == null) {
+                            System.out.println("✖ Proje mevcut değil, tekrar deneyin.");
+                        } else break;
                     }
 
-                    if (selectedProject == null) break;
-
+                    Task task;
                     while (true) {
                         printAllTasksSimple(taskService);
-                        System.out.print("Atanacak Görev ID (0: Ana Menü): ");
-                        String taskToProject = scanner.nextLine();
+                        System.out.print("Görev ID (0: Ana Menü): ");
+                        String tid = scanner.nextLine();
 
-                        if (taskToProject.equals("0")) break;
-
-                        Task tProj = findTaskById(taskService.getAllTasks(), taskToProject);
-                        if (tProj == null) {
-                            System.out.println("✖ Geçersiz görev ID. Tekrar deneyin.");
-                            continue;
+                        if (tid.equals("0")) {
+                            returnToMainMenu(scanner);
+                            return;
                         }
 
-                        taskService.assignTaskToProject(tProj, selectedProject);
+                        task = taskService.findTaskById(tid);
+                        if (task == null) {
+                            System.out.println("✖ Görev mevcut değil, tekrar deneyin.");
+                        } else break;
+                    }
+
+                    try {
+                        taskService.assignTaskToProject(task, project);
                         System.out.println("✔ Görev projeye atandı.");
-                        break;
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
                     }
-                    break;
+                }
 
-
-                case 6:
-                    List<TimedTask> upcoming = taskService.getUpcomingTasks();
-                    if (upcoming.isEmpty()) {
-                        System.out.println("Yaklaşan görev yok.");
-                        returnToMainMenu(scanner);
-                    } else {
-                        for (TimedTask t : upcoming) {
-                            System.out.println(t.getId() + " - " + t.getTitle()
-                                    + " | Deadline: " + t.getDeadline().getDueDate());
-                        }
-                    }
-                    break;
-
-
-                case 7:
-                    printAllTasksDetailed(taskService, users, projectService);
-                    break;
-
-
-                case 8:
-                    System.out.print("Kullanıcı ID: ");
-                    String newUid = scanner.nextLine();
-
-                    if (userExists(users, newUid)) {
-                        System.out.println("✖ Bu ID ile kullanıcı zaten var.");
+                case 7 -> { // Tüm görevleri listele
+                    if (taskService.getAllTasks().isEmpty()
+                            || projectService.getAllProjects().isEmpty()) {
+                        System.out.println("Görev yok.");
                         returnToMainMenu(scanner);
                         break;
                     }
+                    printAllTasksDetailed(taskService, userService, projectService);
+                }
 
-                    System.out.print("Kullanıcı Adı: ");
-                    String uname = scanner.nextLine();
-                    users.add(new User(newUid, uname));
-                    System.out.println("✔ Kullanıcı eklendi.");
-                    break;
-
-
-                case 9:
-                    System.out.print("Proje ID: ");
-                    String projId = scanner.nextLine();
-
-                    if (projectService.findProjectById(projId) != null) {
-                        System.out.println("✖ Bu ID ile proje zaten var.");
-                        returnToMainMenu(scanner);
-                        break;
-                    }
-
-                    System.out.print("Proje Adı: ");
-                    String pname = scanner.nextLine();
-                    projectService.createProject(projId, pname);
-                    System.out.println("✔ Proje eklendi.");
-                    break;
-
-                case 0:
+                case 0 -> {
                     running = false;
                     System.out.println("Programdan çıkılıyor...");
-                    break;
-
-                default:
-                    System.out.println("Geçersiz seçim!");
-                    returnToMainMenu(scanner);
+                }
             }
 
             System.out.println();
@@ -300,47 +174,23 @@ public class Main {
         scanner.close();
     }
 
-
+    // ------------------ UI YARDIMCILARI ------------------
 
     private static void returnToMainMenu(Scanner scanner) {
         System.out.print("Ana menüye dönmek için 0'a basın: ");
-        while (true) {
-            if (scanner.nextLine().equals("0")) break;
+        while (!scanner.nextLine().equals("0")) {
             System.out.print("Lütfen 0'a basın: ");
         }
     }
 
-    private static boolean taskExists(TaskService ts, String id) {
-        return findTaskById(ts.getAllTasks(), id) != null;
-    }
-
-    private static boolean userExists(List<User> users, String id) {
-        return findUserById(users, id) != null;
-    }
-
-    private static User findUserById(List<User> users, String id) {
-        for (User u : users) {
-            if (u.getId().equals(id)) return u;
-        }
-        return null;
-    }
-
-    private static Task findTaskById(List<Task> tasks, String id) {
-        for (Task t : tasks) {
-            if (t.getId().equals(id)) return t;
-        }
-        return null;
-    }
-
     private static void printAllTasksSimple(TaskService ts) {
         for (Task t : ts.getAllTasks()) {
-            System.out.println(t.getId() + " - " + t.getTitle()
-                    + " | Tamamlandı: " + t.isCompleted());
+            System.out.println(t.getId() + " - " + t.getTitle());
         }
     }
 
-    private static void printAllUsers(List<User> users) {
-        for (User u : users) {
+    private static void printAllUsers(UserService us) {
+        for (User u : us.getAllUsers()) {
             System.out.println(u.getId() + " - " + u.getName());
         }
     }
@@ -352,34 +202,20 @@ public class Main {
     }
 
     private static void printAllTasksDetailed(
-            TaskService ts, List<User> users, ProjectService ps) {
-
-        if (ts.getAllTasks().isEmpty()) {
-            System.out.println("Görev yok.");
-            return;
-        }
+            TaskService ts, UserService us, ProjectService ps) {
 
         for (Task t : ts.getAllTasks()) {
 
             System.out.println("ID: " + t.getId());
             System.out.println("Ad: " + t.getTitle());
-            System.out.println("Tamamlandı: " + t.isCompleted());
-
-            if (t instanceof TimedTask) {
-                System.out.println("Deadline: "
-                        + ((TimedTask) t).getDeadline().getDueDate());
-            } else {
-                System.out.println("Deadline: Yok");
-            }
 
             String userName = "Yok";
-            for (User u : users) {
+            for (User u : us.getAllUsers()) {
                 if (u.getTasks().contains(t)) {
                     userName = u.getName();
                     break;
                 }
             }
-            System.out.println("Kullanıcı: " + userName);
 
             String projectName = "Yok";
             for (Project p : ps.getAllProjects()) {
@@ -388,8 +224,10 @@ public class Main {
                     break;
                 }
             }
+
+            System.out.println("Kullanıcı: " + userName);
             System.out.println("Proje: " + projectName);
-            System.out.println("----------------------------");
+            System.out.println("-------------------");
         }
     }
 }

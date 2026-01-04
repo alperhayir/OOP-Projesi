@@ -11,82 +11,92 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TaskServiceTest {
 
     @Test
-    void gorevOlusturuluyorMu(){
+    void gorevOlusturuluyorMu() {
         TaskService taskService = new TaskService();
 
         Task task = taskService.createTask(
-                "1","Test Deneme Task","Junit ogren"
+                "1", "Test Task", "JUnit öğren"
         );
-
 
         assertNotNull(task);
-        assertEquals("Test Deneme Task",task.getTitle());
+        assertEquals("Test Task", task.getTitle());
         assertFalse(task.isCompleted());
-
     }
 
     @Test
-    void gorevTamamlanincaCompletedTrueMu(){
+    void ayniIdIleGorevOlusturulamaz() {
         TaskService taskService = new TaskService();
 
-        Task task = taskService.createTask(
-                "2","Bitirilecek Görev","Junit test yaz"
-        );
+        taskService.createTask("1", "Görev", "Açıklama");
 
-        taskService.completeTask("2");
-        assertTrue(task.isCompleted());
+        assertThrows(IllegalArgumentException.class, () ->
+                taskService.createTask("1", "Tekrar", "Hata")
+        );
     }
 
     @Test
-    void kulaniciyaGorevAtanabiliyorMu(){
-
+    void gorevTamamlanincaTrueDonuyorMu() {
         TaskService taskService = new TaskService();
 
-        User user = new User("a1","Alper");
+        taskService.createTask("2", "Bitirilecek", "Test");
+
+        boolean result = taskService.completeTask("2");
+
+        assertTrue(result);
+    }
+
+    @Test
+    void olmayanGorevTamamlanamaz() {
+        TaskService taskService = new TaskService();
+
+        boolean result = taskService.completeTask("999");
+
+        assertFalse(result);
+    }
+
+    @Test
+    void kullaniciyaGorevAtanabiliyorMu() {
+        TaskService taskService = new TaskService();
+        User user = new User("u1", "Alper");
+
         Task task = taskService.createTask(
-                "3","Kullanici Görevi" , "Görev atama testi"
+                "3", "Kullanıcı Görevi", "Atama testi"
         );
-        taskService.assignTaskToUser(task,user);
-        assertEquals(1,user.getTasks().size());
+
+        taskService.assignTaskToUser(task, user);
+
+        assertEquals(1, user.getTasks().size());
         assertTrue(user.getTasks().contains(task));
     }
 
     @Test
-    void projeyeGorevAtanabiliyorMu(){
+    void projeyeGorevAtanabiliyorMu() {
         TaskService taskService = new TaskService();
+        Project project = new Project("p1", "OOP Projesi");
 
-        Project project = new Project("p1","OOP Projesi");
         Task task = taskService.createTask(
-                "4",
-                "Proje Görevi",
-                "Projeye atama testi"
-
+                "4", "Proje Görevi", "Atama testi"
         );
 
-        taskService.assignTaskToProject(task , project);
+        taskService.assignTaskToProject(task, project);
 
-        assertEquals(1,project.getTasks().size());
+        assertEquals(1, project.getTasks().size());
         assertTrue(project.getTasks().contains(task));
     }
 
     @Test
-    void bugunkuGorevListeleniyorMu(){
+    void buguneYakinGorevlerListeleniyorMu() {
         TaskService taskService = new TaskService();
 
-        Deadline deadline = new Deadline(LocalDate.now());
-        TimedTask task = new TimedTask(
+        taskService.createTimedTask(
                 "5",
-                "Bugünkü Görev",
+                "Yaklaşan Görev",
                 "Deadline bugün",
-                deadline
+                LocalDate.now()
         );
 
-        taskService.getAllTasks().add(task);
+        List<TimedTask> upcomingTasks = taskService.getUpcomingTasks();
 
-
-        List<TimedTask> upcomingTasks =taskService.getUpcomingTasks();
-
-        assertEquals(1,upcomingTasks.size());
-        assertTrue(upcomingTasks.contains(task));
+        assertEquals(1, upcomingTasks.size());
     }
 }
