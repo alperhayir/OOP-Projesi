@@ -26,9 +26,9 @@ public class Main {
         if (file.exists()) {
             System.out.println("Veriler yükleniyor...");
             if (exportService.importFromSimpleFormat(taskService, projectService, userService, dataFile)) {
-                System.out.println("✔ Veriler başarıyla yüklendi.");
+                System.out.println(" Veriler başarıyla yüklendi.");
             } else {
-                System.out.println("✖ Veri yükleme hatası.");
+                System.out.println(" Veri yükleme hatası.");
             }
             System.out.println();
         }
@@ -575,7 +575,7 @@ public class Main {
                         // Görev sil
                         case "1" -> {
                             if (!taskService.hasTasks()) {
-                                System.out.println("✖ Silinecek görev yok.");
+                                System.out.println(" Silinecek görev yok.");
                                 returnToMainMenu(scanner);
                                 break;
                             }
@@ -591,7 +591,7 @@ public class Main {
 
                                 Task task = taskService.findTaskById(taskId);
                                 if (task == null) {
-                                    System.out.println("✖ Görev bulunamadı.");
+                                    System.out.println(" Görev bulunamadı.");
                                     continue;
                                 }
 
@@ -607,10 +607,10 @@ public class Main {
 
                                 // Görevi sil
                                 if (taskService.deleteTask(taskId)) {
-                                    System.out.println("✔ Görev silindi.");
+                                    System.out.println(" Görev silindi.");
                                     break;
                                 } else {
-                                    System.out.println("✖ Görev silinemedi.");
+                                    System.out.println(" Görev silinemedi.");
                                 }
                             }
                         }
@@ -618,7 +618,7 @@ public class Main {
                         // Proje sil
                         case "2" -> {
                             if (!projectService.hasProjects()) {
-                                System.out.println("✖ Silinecek proje yok.");
+                                System.out.println(" Silinecek proje yok.");
                                 returnToMainMenu(scanner);
                                 break;
                             }
@@ -633,10 +633,10 @@ public class Main {
                                 }
 
                                 if (projectService.deleteProject(projectId)) {
-                                    System.out.println("✔ Proje silindi.");
+                                    System.out.println(" Proje silindi.");
                                     break;
                                 } else {
-                                    System.out.println("✖ Proje bulunamadı.");
+                                    System.out.println(" Proje bulunamadı.");
                                 }
                             }
                         }
@@ -659,10 +659,10 @@ public class Main {
                                 }
 
                                 if (userService.deleteUser(userId)) {
-                                    System.out.println("✔ Kullanıcı silindi.");
+                                    System.out.println(" Kullanıcı silindi.");
                                     break;
                                 } else {
-                                    System.out.println("✖ Kullanıcı bulunamadı.");
+                                    System.out.println(" Kullanıcı bulunamadı.");
                                 }
                             }
                         }
@@ -670,7 +670,7 @@ public class Main {
                         // Tüm görevleri sil
                         case "4" -> {
                             if (!taskService.hasTasks()) {
-                                System.out.println("✖ Silinecek görev yok.");
+                                System.out.println(" Silinecek görev yok.");
                                 returnToMainMenu(scanner);
                                 break;
                             }
@@ -690,16 +690,16 @@ public class Main {
                                 }
 
                                 taskService.deleteAllTasks();
-                                System.out.println("✔ Tüm görevler silindi.");
+                                System.out.println(" Tüm görevler silindi.");
                             } else {
-                                System.out.println("✖ İşlem iptal edildi.");
+                                System.out.println(" İşlem iptal edildi.");
                             }
                         }
 
                         // Tüm projeleri sil
                         case "5" -> {
                             if (!projectService.hasProjects()) {
-                                System.out.println("✖ Silinecek proje yok.");
+                                System.out.println(" Silinecek proje yok.");
                                 returnToMainMenu(scanner);
                                 break;
                             }
@@ -709,9 +709,9 @@ public class Main {
 
                             if (confirm.equals("EVET")) {
                                 projectService.deleteAllProjects();
-                                System.out.println("✔ Tüm projeler silindi.");
+                                System.out.println("Tüm projeler silindi.");
                             } else {
-                                System.out.println("✖ İşlem iptal edildi.");
+                                System.out.println(" İşlem iptal edildi.");
                             }
                         }
 
@@ -736,7 +736,7 @@ public class Main {
 
                         // TÜM VERİLERİ SİL
                         case "7" -> {
-                            System.out.println("⚠️  UYARI: Bu işlem TÜM VERİLERİ silecektir!");
+                            System.out.println("  UYARI: Bu işlem TÜM VERİLERİ silecektir!");
                             System.out.print("Emin misiniz? (TÜMÜNÜSİL yazın): ");
                             String confirm = scanner.nextLine();
 
@@ -792,7 +792,7 @@ public class Main {
                 case "2": return Priority.MEDIUM;
                 case "3": return Priority.HIGH;
                 default:
-                    System.out.println("✖ Geçersiz seçim, tekrar deneyin.");
+                    System.out.println(" Geçersiz seçim, tekrar deneyin.");
             }
         }
     }
@@ -808,14 +808,14 @@ public class Main {
                 LocalDate date = LocalDate.parse(input);
 
                 if (date.isBefore(LocalDate.now())) {
-                    System.out.println("✖ Geçmiş tarih girilemez.");
+                    System.out.println("Geçmiş tarih girilemez.");
                     continue;
                 }
 
                 return date;
 
             } catch (Exception e) {
-                System.out.println("✖ Geçersiz tarih formatı. Örnek: 2024-05-12");
+                System.out.println(" Geçersiz tarih formatı. Örnek: 2024-05-12");
             }
         }
     }

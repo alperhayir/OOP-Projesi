@@ -19,11 +19,7 @@ public class ExportService {
     /**
      * Tüm görevleri dosyaya aktarır.
      *
-     * @param taskService Görev servisi
-     * @param projectService Proje servisi
-     * @param userService Kullanıcı servisi
-     * @param fileName Dosya adı
-     * @return İşlem başarılı ise true, aksi halde false
+
      */
     public boolean exportAllTasksToFile(TaskService taskService,
                                         ProjectService projectService,
@@ -90,10 +86,7 @@ public class ExportService {
 
     /**
      * Tüm projeleri dosyaya aktarır.
-     *
-     * @param projectService Proje servisi
-     * @param fileName Dosya adı
-     * @return İşlem başarılı ise true, aksi halde false
+
      */
     public boolean exportAllProjectsToFile(ProjectService projectService, String fileName) {
         try (FileWriter writer = new FileWriter(fileName)) {
@@ -135,10 +128,8 @@ public class ExportService {
 
     /**
      * Tüm kullanıcıları dosyaya aktarır.
-     *
-     * @param userService Kullanıcı servisi
-     * @param fileName Dosya adı
-     * @return İşlem başarılı ise true, aksi halde false
+
+
      */
     public boolean exportAllUsersToFile(UserService userService, String fileName) {
         try (FileWriter writer = new FileWriter(fileName)) {
@@ -180,12 +171,7 @@ public class ExportService {
 
     /**
      * Tüm verileri (görevler, projeler, kullanıcılar) tek bir dosyaya aktarır.
-     *
-     * @param taskService Görev servisi
-     * @param projectService Proje servisi
-     * @param userService Kullanıcı servisi
-     * @param fileName Dosya adı
-     * @return İşlem başarılı ise true, aksi halde false
+
      */
     public boolean exportAllToFile(TaskService taskService,
                                    ProjectService projectService,
@@ -286,17 +272,7 @@ public class ExportService {
 
     /**
      * Tüm verileri basit formatta dosyaya kaydeder (yükleme için).
-     * Format: Her satır bir kayıt
-     * USER|id|name
-     * PROJECT|id|name
-     * TASK|id|title|description|priority|deadline|userId|projectId|completed
-     * TIMEDTASK|id|title|description|priority|deadline|userId|projectId|completed
-     *
-     * @param taskService Görev servisi
-     * @param projectService Proje servisi
-     * @param userService Kullanıcı servisi
-     * @param fileName Dosya adı
-     * @return İşlem başarılı ise true, aksi halde false
+
      */
     public boolean saveDataToFile(TaskService taskService,
                                 ProjectService projectService,
@@ -354,17 +330,7 @@ public class ExportService {
 
     /**
      * Basit format dosyadan veri yükler.
-     * Format: Her satır bir kayıt
-     * USER|id|name
-     * PROJECT|id|name
-     * TASK|id|title|description|priority|deadline|userId|projectId|completed
-     * TIMEDTASK|id|title|description|priority|deadline|userId|projectId|completed
-     *
-     * @param taskService Görev servisi
-     * @param projectService Proje servisi
-     * @param userService Kullanıcı servisi
-     * @param fileName Dosya adı
-     * @return İşlem başarılı ise true, aksi halde false
+
      */
     public boolean importFromSimpleFormat(TaskService taskService,
                                          ProjectService projectService,
